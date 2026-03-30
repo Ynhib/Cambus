@@ -21,7 +21,9 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
-
+.pub
+cambus
+cambus.pub
 # =========================================
 # ÉDITEURS DE CODE (VS Code, WebStorm, etc.)
 # =========================================
