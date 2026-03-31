@@ -42,12 +42,12 @@ export default function AddEventModal({ isOpen, onClose }: Props) {
   };
 
   const renderDateChips = () => (
-    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2 snap-x">
-      <button type="button" onClick={() => handleDateShortcut(0)} className="snap-start shrink-0 bg-inox-800 border border-inox-600 rounded-full px-4 py-2 text-xs font-bold text-white hover:bg-inox-700 min-h-[44px]">Aujourd'hui</button>
-      <button type="button" onClick={() => handleDateShortcut(1)} className="snap-start shrink-0 bg-inox-800 border border-inox-600 rounded-full px-4 py-2 text-xs font-bold text-white hover:bg-inox-700 min-h-[44px]">Demain</button>
-      <button type="button" onClick={() => handleDateShortcut(3)} className="snap-start shrink-0 bg-inox-800 border border-inox-600 rounded-full px-4 py-2 text-xs font-bold text-white hover:bg-inox-700 min-h-[44px]">+3 Jours</button>
-      <button type="button" onClick={() => handleDateShortcut(7)} className="snap-start shrink-0 bg-inox-800 border border-inox-600 rounded-full px-4 py-2 text-xs font-bold text-white hover:bg-inox-700 min-h-[44px]">+1 Sem.</button>
-      <button type="button" onClick={() => handleDateShortcut(30)} className="snap-start shrink-0 bg-inox-800 border border-inox-600 rounded-full px-4 py-2 text-xs font-bold text-white hover:bg-inox-700 min-h-[44px]">+1 Mois</button>
+    <div className="flex flex-wrap gap-2">
+      <button type="button" onClick={() => handleDateShortcut(0)} className="bg-inox-800 border border-inox-600 rounded-full px-4 py-2 text-xs font-bold text-white hover:bg-inox-700 min-h-[44px]">Aujourd'hui</button>
+      <button type="button" onClick={() => handleDateShortcut(1)} className="bg-inox-800 border border-inox-600 rounded-full px-4 py-2 text-xs font-bold text-white hover:bg-inox-700 min-h-[44px]">Demain</button>
+      <button type="button" onClick={() => handleDateShortcut(3)} className="bg-inox-800 border border-inox-600 rounded-full px-4 py-2 text-xs font-bold text-white hover:bg-inox-700 min-h-[44px]">+3 Jours</button>
+      <button type="button" onClick={() => handleDateShortcut(7)} className="bg-inox-800 border border-inox-600 rounded-full px-4 py-2 text-xs font-bold text-white hover:bg-inox-700 min-h-[44px]">+1 Sem.</button>
+      <button type="button" onClick={() => handleDateShortcut(30)} className="bg-inox-800 border border-inox-600 rounded-full px-4 py-2 text-xs font-bold text-white hover:bg-inox-700 min-h-[44px]">+1 Mois</button>
     </div>
   );
 

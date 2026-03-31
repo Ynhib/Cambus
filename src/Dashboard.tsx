@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
-  Menu, BellRing, ThermometerSun, 
+  Menu, BellRing,
   Flame, AlertTriangle, CloudSun,
   LayoutDashboard, ScanLine, Package, ChefHat
 } from 'lucide-react';
+import AddStockModal from './features/inventory/components/AddStockModal';
 
 export default function Dashboard() {
+  const [isStockModalOpen, setIsStockModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-inox-900 text-inox-text pb-24 font-sans selection:bg-action-DEFAULT/30">
       
@@ -77,12 +80,19 @@ export default function Dashboard() {
           </div>
         </section>
         
-        {/* Autres informations rapides (Optionnel) */}
+        {/* Actions rapides */}
         <section>
           <div className="flex gap-4">
-            <button className="flex-1 bg-action-DEFAULT hover:bg-action-dark text-white p-4 rounded-xl font-bold shadow-inox-glow transition-all active:scale-95 flex items-center justify-center gap-2">
-              <BellRing className="w-5 h-5" />
+            <button className="flex-1 bg-inox-800 hover:bg-inox-700 text-white p-4 rounded-xl font-bold border border-inox-700 transition-all active:scale-95 flex items-center justify-center gap-2">
+              <BellRing className="w-5 h-5 text-action-light" />
               Lancer prod.
+            </button>
+            <button
+              onClick={() => setIsStockModalOpen(true)}
+              className="flex-1 bg-action-DEFAULT hover:bg-action-dark text-inox-900 p-4 rounded-xl font-bold shadow-inox-glow transition-all active:scale-95 flex items-center justify-center gap-2"
+            >
+              <Package className="w-5 h-5" />
+              Entrée stock
             </button>
           </div>
         </section>
@@ -93,20 +103,34 @@ export default function Dashboard() {
       <nav className="fixed bottom-0 w-full bg-inox-900 border-t border-inox-700 pb-safe">
         <ul className="flex justify-around items-center h-16 px-2">
           <NavItem icon={<LayoutDashboard />} label="Bord" active />
-          <NavItem icon={<ScanLine />} label="Réception" />
+          <NavItem icon={<ScanLine />} label="Réception" onClick={() => setIsStockModalOpen(true)} />
           <NavItem icon={<Package />} label="Stock" />
           <NavItem icon={<ChefHat />} label="Recettes" />
         </ul>
       </nav>
+
+      {/* ── MODALES ── */}
+      <AddStockModal isOpen={isStockModalOpen} onClose={() => setIsStockModalOpen(false)} />
       
     </div>
   );
 }
 
-function NavItem({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) {
+function NavItem({
+  icon,
+  label,
+  active = false,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
   return (
     <li className="flex-1">
       <button 
+        onClick={onClick}
         className={`w-full flex flex-col items-center justify-center h-full gap-1 p-2 ${
           active ? 'text-action-light' : 'text-inox-muted hover:text-white'
         } transition-colors`}

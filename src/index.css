@@ -8,3 +8,10 @@
   }
 }
 
+@keyframes scanLine {
+  0%   { top: 15%; }
+  50%  { top: 85%; }
+  100% { top: 15%; }
+}
+
+

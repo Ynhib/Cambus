@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  AlertTriangle, Flame, BellRing, MapPin
+  AlertTriangle, Flame, BellRing, MapPin, Package
 } from 'lucide-react';
 import WeatherWidget from '../../weather/components/WeatherWidget';
 import EventWidget from '../../planning/components/EventWidget';
@@ -17,7 +17,11 @@ const INITIAL_ALERTS: StreetAlert[] = [
   { id: '1', title: 'Réfection trottoir', type: 'TRAVAUX', location: { lat: 48.8566, lng: 2.3524 } } 
 ];
 
-export default function Dashboard() {
+interface DashboardProps {
+  onOpenStock?: () => void;
+}
+
+export default function Dashboard({ onOpenStock }: DashboardProps) {
   const { t } = useTranslation();
   const [shopInfo, setShopInfo] = useState<ShopInfo | null>(loadShopInfo());
   const shopLocation = shopInfo?.location ?? null;
@@ -209,7 +213,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Zone de Lancement de production */}
+          {/* Zone d'Actions rapides */}
           <div className="space-y-4 pt-4">
             {workload.lostPercentage > 0 && (
               <div className="bg-fefo-DEFAULT/15 border border-fefo-DEFAULT/40 p-5 rounded-3xl flex gap-4 text-fefo-light animate-in fade-in slide-in-from-bottom-4 items-center">
@@ -223,25 +227,45 @@ export default function Dashboard() {
               </div>
             )}
             
-            <button className={`w-full ${workload.score >= 80 ? 'bg-fefo-DEFAULT hover:bg-red-600 shadow-[0_0_20px_rgba(239,68,68,0.3)]' : workload.score >= 50 ? 'bg-orange-500 hover:bg-orange-600 shadow-[0_0_20px_rgba(249,115,22,0.3)]' : 'bg-action-DEFAULT hover:bg-action-dark shadow-inox-glow'} text-white p-6 rounded-3xl font-bold transition-all active:scale-[0.98] flex items-center justify-between text-lg group`}>
-              <div className="flex items-center gap-4">
-                <div className="bg-white/20 p-3 rounded-2xl">
-                  <Flame className="w-7 h-7 group-hover:scale-110 transition-transform" strokeWidth={2.5} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button className={`w-full ${workload.score >= 80 ? 'bg-fefo-DEFAULT hover:bg-red-600 shadow-[0_0_20px_rgba(239,68,68,0.3)]' : workload.score >= 50 ? 'bg-orange-500 hover:bg-orange-600 shadow-[0_0_20px_rgba(249,115,22,0.3)]' : 'bg-inox-800 hover:bg-inox-700 border border-inox-700'} text-white p-5 rounded-3xl font-bold transition-all active:scale-[0.98] flex items-center justify-between group`}>
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/10 p-3 rounded-2xl text-action-light">
+                    <Flame className="w-7 h-7 group-hover:scale-110 transition-transform" strokeWidth={2.5} />
+                  </div>
+                  <div className="text-left">
+                    <span className="block text-xl">{t('dashboard.launch_production')}</span>
+                    <span className="text-[10px] opacity-70 font-bold uppercase tracking-widest mt-0.5 block">
+                      Charge : {workload.label}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <span className="block text-xl md:text-2xl">{t('dashboard.launch_production')}</span>
-                  <span className="text-xs opacity-90 font-bold uppercase tracking-widest mt-1 block">
-                    Charge estimée : {workload.label} ({workload.score}/100)
-                  </span>
+              </button>
+
+              <button 
+                onClick={onOpenStock}
+                className="w-full bg-action-DEFAULT hover:bg-action-dark shadow-inox-glow text-inox-900 p-5 rounded-3xl font-bold transition-all active:scale-[0.98] flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="bg-black/10 p-3 rounded-2xl">
+                    <Package className="w-7 h-7 group-hover:rotate-12 transition-transform" strokeWidth={2.5} />
+                  </div>
+                  <div className="text-left">
+                    <span className="block text-xl">Entrée en Stock</span>
+                    <span className="text-[10px] opacity-70 font-bold uppercase tracking-widest mt-0.5 block">
+                      Réception & Inventaire
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="w-14 h-14 bg-black/20 rounded-2xl flex items-center justify-center font-black text-xl group-hover:bg-black/30 transition-colors">
-                GO
-              </div>
-            </button>
+                <div className="w-12 h-12 bg-black/10 rounded-2xl flex items-center justify-center font-black text-lg group-hover:bg-black/20 transition-colors">
+                  SCAN
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 }
+
