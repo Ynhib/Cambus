@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "title": "Poste de pilotage",
+    "production_advice": "Conseil du jour",
+    "launch_production": "Lancer prod."
+  },
+  "weather": {
+    "current_conditions": "Conditions Actuelles",
+    "rain_risk": "Risque pluie",
+    "loading": "Recherche de la météo...",
+    "error_network": "Impossible de charger la météo",
+    "location_required_title": "Position requise",
+    "location_required_desc": "La météo ultra-locale a besoin de votre position GPS.",
+    "geolocation_disabled": "Géolocalisation désactivée",
+    "geolocation_disabled_desc": "Entrez votre code postal ou ville",
+    "authorize_gps": "Autoriser la géolocalisation",
+    "retry_gps": "Ou ré-essayer avec le GPS",
+    "city_placeholder": "Ex: Paris, Lyon...",
+    "change_city": "Changer de ville"
+  },
+  "fefo": {
+    "alerts_title": "Attention Stock",
+    "section_title": "Péremptions (FEFO)",
+    "expires_tomorrow": "{{count}} produit expire demain",
+    "expires_tomorrow_plural": "{{count}} produits expirent demain"
+  },
+  "nav": {
+    "dashboard": "Bord",
+    "reception": "Réception",
+    "stock": "Stock",
+    "recipes": "Recettes"
+  }
+}

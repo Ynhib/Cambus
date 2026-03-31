@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "title": "Control Panel",
+    "production_advice": "Tip of the day",
+    "launch_production": "Start production"
+  },
+  "weather": {
+    "current_conditions": "Current Conditions",
+    "rain_risk": "Rain risk",
+    "loading": "Fetching weather...",
+    "error_network": "Unable to load weather",
+    "location_required_title": "Location required",
+    "location_required_desc": "Local weather needs your GPS position.",
+    "geolocation_disabled": "Geolocation disabled",
+    "geolocation_disabled_desc": "Enter your postcode or city",
+    "authorize_gps": "Allow geolocation",
+    "retry_gps": "Or retry with GPS",
+    "city_placeholder": "e.g. London, Paris...",
+    "change_city": "Change city"
+  },
+  "fefo": {
+    "alerts_title": "Stock Warning",
+    "section_title": "Expiry Alerts (FEFO)",
+    "expires_tomorrow": "{{count}} product expires tomorrow",
+    "expires_tomorrow_plural": "{{count}} products expire tomorrow"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "reception": "Receiving",
+    "stock": "Stock",
+    "recipes": "Recipes"
+  }
+}

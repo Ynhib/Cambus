@@ -1,0 +1,33 @@
+{
+  "dashboard": {
+    "title": "Steuerstand",
+    "production_advice": "Tipp des Tages",
+    "launch_production": "Produktion starten"
+  },
+  "weather": {
+    "current_conditions": "Aktuelle Bedingungen",
+    "rain_risk": "Regenrisiko",
+    "loading": "Wetter wird geladen...",
+    "error_network": "Wetter konnte nicht geladen werden",
+    "location_required_title": "Standort erforderlich",
+    "location_required_desc": "Das Ortswetter benötigt Ihren GPS-Standort.",
+    "geolocation_disabled": "Geolokalisierung deaktiviert",
+    "geolocation_disabled_desc": "Geben Sie Ihre Postleitzahl oder Stadt ein",
+    "authorize_gps": "GPS erlauben",
+    "retry_gps": "Oder erneut mit GPS versuchen",
+    "city_placeholder": "z. B. Berlin, München...",
+    "change_city": "Stadt wechseln"
+  },
+  "fefo": {
+    "alerts_title": "Achtung Lager",
+    "section_title": "Ablaufdaten (FEFO)",
+    "expires_tomorrow": "{{count}} Produkt läuft morgen ab",
+    "expires_tomorrow_plural": "{{count}} Produkte laufen morgen ab"
+  },
+  "nav": {
+    "dashboard": "Start",
+    "reception": "Eingang",
+    "stock": "Lager",
+    "recipes": "Rezepte"
+  }
+}
