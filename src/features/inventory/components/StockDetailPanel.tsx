@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { X, History, BarChart3, Package, Calendar, Tag, Info } from 'lucide-react';
+import { X, History, BarChart3, Package, Calendar, Tag, Info, Printer } from 'lucide-react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type CatalogItem, type Batch } from '../../../db/db';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
 } from 'recharts';
+import { useLabelPrinter } from '../hooks/useLabelPrinter';
+import TraceabilityLabel from './TraceabilityLabel';
 
 interface Props {
   product: CatalogItem;
@@ -16,6 +17,7 @@ type Tab = 'LOTS' | 'PRIX';
 
 export default function StockDetailPanel({ product, isOpen, onClose }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('LOTS');
+  const { printLabel, printData } = useLabelPrinter();
 
   // Récupérer tous les lots pour ce produit
   const allBatches = useLiveQuery(
@@ -104,9 +106,18 @@ export default function StockDetailPanel({ product, isOpen, onClose }: Props) {
                         <p className="text-xs font-bold text-inox-muted uppercase tracking-tighter mb-1">Lot N°</p>
                         <p className="text-lg font-black text-white">{batch.lotNumber}</p>
                       </div>
-                      <div className="text-right">
-                        <p className="text-xs font-bold text-inox-muted uppercase tracking-tighter mb-1">Stock</p>
-                        <p className="text-lg font-black text-white">{batch.currentQuantity} <span className="text-sm text-inox-muted font-bold">{product.unit}</span></p>
+                      <div className="flex flex-col items-end gap-2">
+                        <button 
+                          onClick={() => printLabel(batch.id!)}
+                          className="p-2 bg-inox-950 border border-white/5 rounded-xl text-inox-muted hover:text-white hover:border-action-DEFAULT transition-all shadow-inner"
+                          title="Imprimer l'étiquette de traçabilité"
+                        >
+                          <Printer className="w-4 h-4" />
+                        </button>
+                        <div className="text-right">
+                          <p className="text-xs font-bold text-inox-muted uppercase tracking-tighter mb-1">Stock</p>
+                          <p className="text-lg font-black text-white">{batch.currentQuantity} <span className="text-sm text-inox-muted font-bold">{product.unit}</span></p>
+                        </div>
                       </div>
                     </div>
 
@@ -217,6 +228,12 @@ export default function StockDetailPanel({ product, isOpen, onClose }: Props) {
         </div>
 
       </div>
+      {/* Print Portal */}
+      {printData && (
+        <div className="hidden">
+           <TraceabilityLabel batch={printData.batch} product={printData.product} />
+        </div>
+      )}
     </div>
   );
 }

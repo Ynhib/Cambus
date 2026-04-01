@@ -9,6 +9,7 @@
  *  - Ajouter un pays → étendre EVENTS_BY_COUNTRY et SCHOOL_ZONES.
  */
 import type { StreetEvent, CustomerOrder } from '../../../db/db';
+import type { Holiday } from './holidayService';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -321,6 +322,7 @@ interface RadarEngineInput {
   currentDate?: Date;
   zipCode?: string; // Code postal (5 chiffres FR, ou format LU/DE)
   country?: string; // 'FR' | 'LU' | 'DE' | 'BE' | …
+  holidays?: Holiday[]; // Jours fériés pré-chargés
 }
 
 /**
@@ -331,10 +333,44 @@ export function generateRadarAlerts({
   currentDate = new Date(),
   zipCode = '',
   country = 'FR',
+  holidays = [],
 }: RadarEngineInput): RadarAlert[] {
   const alerts: RadarAlert[] = [];
   const year = currentDate.getFullYear();
   const countryCode = country.toUpperCase();
+
+  // ── 0. Jours Fériés (Smart Detection) ──────────────────────────────────
+  for (const h of holidays) {
+    const hDate = new Date(h.date);
+    const diff = daysUntil(hDate, currentDate);
+
+    // Aujourd'hui = FERMÉ
+    if (diff === 0) {
+      alerts.push({
+        id: `holiday-today-${h.date}`,
+        title: `🏮 FERMÉ (Férié : ${h.name})`,
+        description: `Aujourd'hui est un jour férié (${h.localName}). La production est désactivée. Profitez-en pour vous reposer !`,
+        emoji: '🏮',
+        severity: 'high',
+        category: 'holiday_anticipation',
+        daysUntil: 0,
+      });
+    } 
+    // J-1 à J-7 = ANTICIPATION
+    else if (diff > 0 && diff <= 7) {
+      alerts.push({
+        id: `holiday-soon-${h.date}`,
+        title: `🔔 ${h.name} dans ${diff} jour${diff > 1 ? 's' : ''}`,
+        description: diff === 1 
+          ? `⚠️ Veille de jour férié ! +40% de production recommandé pour anticiper la fermeture de demain.`
+          : `Anticipez la fermeture du ${hDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}. Commandez vos matières premières.`,
+        emoji: '🔔',
+        severity: diff <= 3 ? 'high' : 'medium',
+        category: 'holiday_anticipation',
+        daysUntil: diff,
+      });
+    }
+  }
 
   // ── 1. Événements du calendrier ──────────────────────────────────────────
   for (const event of CALENDAR_EVENTS) {

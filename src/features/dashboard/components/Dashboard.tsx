@@ -12,6 +12,8 @@ import RadarWidget from '../../planning/components/RadarWidget';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../db/db';
 import { calculateWorkloadScore } from '../../planning/services/radarEngine';
+import ProductionJournalWidget from './ProductionJournalWidget';
+import { useNavigate } from 'react-router-dom';
 
 const INITIAL_ALERTS: StreetAlert[] = [
   { id: '1', title: 'Réfection trottoir', type: 'TRAVAUX', location: { lat: 48.8566, lng: 2.3524 } } 
@@ -23,6 +25,7 @@ interface DashboardProps {
 
 export default function Dashboard({ onOpenStock }: DashboardProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [shopInfo, setShopInfo] = useState<ShopInfo | null>(loadShopInfo());
   const shopLocation = shopInfo?.location ?? null;
   const zipCode = shopInfo?.street?.match(/\b(\d{5})\b/)?.[1] ?? '';
@@ -262,6 +265,11 @@ export default function Dashboard({ onOpenStock }: DashboardProps) {
                 </div>
               </button>
             </div>
+          </div>
+
+          {/* JOURNAL DE PRODUCTION (PLEINE LARGEUR) */}
+          <div className="pt-12 md:pt-16 border-t border-slate-800/50 mt-12 pb-8">
+            <ProductionJournalWidget onOpenEOD={() => navigate('/eod')} />
           </div>
         </div>
       )}

@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   CalendarDays, AlertTriangle, Info, Sparkles,
   PartyPopper, CheckCircle2, ChevronRight
 } from 'lucide-react';
 import { generateRadarAlerts, type RadarAlert, type AlertSeverity } from '../services/radarEngine';
+import { getHolidays, type Holiday } from '../services/holidayService';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -80,9 +81,26 @@ function AlertCard({ alert }: { alert: RadarAlert }) {
 // ─── Composant Principal ──────────────────────────────────────────────────────
 
 export default function RadarWidget({ zipCode = '', country = 'FR' }: Props) {
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const fetchHolidays = async () => {
+      setIsLoading(true);
+      const data = await getHolidays(new Date().getFullYear(), country, zipCode);
+      if (active) {
+        setHolidays(data);
+        setIsLoading(false);
+      }
+    };
+    fetchHolidays();
+    return () => { active = false; };
+  }, [zipCode, country]);
+
   const alerts = useMemo(
-    () => generateRadarAlerts({ currentDate: new Date(), zipCode, country }),
-    [zipCode, country]
+    () => generateRadarAlerts({ currentDate: new Date(), zipCode, country, holidays }),
+    [zipCode, country, holidays]
   );
 
   const highAlerts = alerts.filter(a => a.severity === 'high');

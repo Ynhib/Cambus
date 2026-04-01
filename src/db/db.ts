@@ -47,7 +47,8 @@ export interface CatalogItem {
   allergens?: string[]; // ["Gluten", "Lactose", etc.]
   fatPer100?: number;   // Grammes de gras pour 100g ou 100ml
   isRepurposable?: boolean; // ex: croissants -> amandes
-  isFreezable?: boolean;    // ex: pâte crue
+  isFreezable?: boolean;
+  repurposeToId?: number;
 }
 
 export type TransformationAction = 'FREEZE' | 'REPURPOSE' | 'WASTE';
@@ -103,20 +104,14 @@ export interface RecipeIngredient {
   requiredQuantity: number;
 }
 
-export interface RecipeLabor {
-  roleId: number;
-  minutesSpent: number;
-}
-
-export interface RecipeEquipment {
-  equipmentId: number;
-  minutesUsed: number;
-}
-
-export interface RecipeStep {
-  label: string;
-  minutes: number;
-  type: 'PREP' | 'REST' | 'KNEAD' | 'BAKING';
+export interface ProductionStep {
+  stepId: string;
+  name: string;
+  activeTimeMinutes: number;
+  activeRoleId: number;
+  passiveTimeMinutes: number;
+  equipmentId?: number;
+  scalingType: 'FIXED' | 'VARIABLE';
 }
 
 export interface Recipe {
@@ -126,10 +121,8 @@ export interface Recipe {
   yield: number;
   vatRate: number; // ex: 5.5
   ingredients: RecipeIngredient[];
-  labor: RecipeLabor[];
-  equipmentUsed: RecipeEquipment[];
+  productionSteps: ProductionStep[];
   instructions?: string[];
-  prepSteps?: RecipeStep[];
   utensils?: string[];
   bakingTemp?: number;
   bakingTime?: number; // en minutes
@@ -148,6 +141,60 @@ const db = new Dexie('CambuseDB') as Dexie & {
   equipment: EntityTable<Equipment, 'id'>;
   transformations: EntityTable<Transformation, 'id'>;
 };
+
+// Version 14 : Support de la déviation (Repurpose mapping)
+db.version(14).stores({
+  catalog: '++id, name, category, defaultSupplierId, repurposeToId',
+});
+
+// Version 13 : Economies d'Echelle (Fixed vs Variable)
+db.version(13).upgrade(async (tx) => {
+  return tx.table('recipes').toCollection().modify((recipe: any) => {
+    (recipe.productionSteps || []).forEach((step: any) => {
+      // Heuristique : Si le temps est passif (cuisson, repos), c'est souvent FIXED
+      step.scalingType = step.passiveTimeMinutes > 0 ? 'FIXED' : 'VARIABLE';
+    });
+  });
+});
+
+// Version 12 : Refonte Labor Cost (Active vs Passive Time)
+db.version(12).stores({
+  recipes: '++id, name, category',
+}).upgrade(async (tx) => {
+  return tx.table('recipes').toCollection().modify((recipe: any) => {
+    const oldSteps = recipe.prepSteps || [];
+    const oldLabor = recipe.labor || [];
+    const oldEquipment = recipe.equipmentUsed || [];
+
+    recipe.productionSteps = oldSteps.map((step: any, idx: number) => {
+      const isPassive = step.type === 'REST' || step.type === 'BAKING';
+      return {
+        stepId: crypto.randomUUID?.() || `step-${Date.now()}-${idx}`,
+        name: step.label,
+        activeTimeMinutes: isPassive ? 0 : step.minutes,
+        passiveTimeMinutes: isPassive ? step.minutes : 0,
+        activeRoleId: oldLabor[0]?.roleId || 0,
+        equipmentId: oldEquipment[0]?.equipmentId || (step.type === 'BAKING' ? 1 : undefined)
+      };
+    });
+
+    // Fallback if no steps existed but labor/equipment did
+    if (recipe.productionSteps.length === 0 && (oldLabor.length > 0 || oldEquipment.length > 0)) {
+       recipe.productionSteps.push({
+         stepId: `migrated-legacy`,
+         name: "Production (Migré)",
+         activeTimeMinutes: oldLabor[0]?.minutesSpent || 0,
+         passiveTimeMinutes: oldEquipment[0]?.minutesUsed || 0,
+         activeRoleId: oldLabor[0]?.roleId || 0,
+         equipmentId: oldEquipment[0]?.equipmentId
+       });
+    }
+
+    delete recipe.labor;
+    delete recipe.equipmentUsed;
+    delete recipe.prepSteps;
+  });
+});
 
 // Version 11 : HACCP End-of-Day Transformations & Waste Tracking
 db.version(11).stores({
